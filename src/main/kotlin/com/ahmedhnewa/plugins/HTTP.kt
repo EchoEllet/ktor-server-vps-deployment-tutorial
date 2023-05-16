@@ -10,12 +10,12 @@ import io.ktor.http.content.*
 import io.ktor.server.application.*
 
 fun Application.configureHTTP() {
-    install(HttpsRedirect) {
-            // The port to redirect to. By default 443, the default HTTPS port.
-            sslPort = 443
-            // 301 Moved Permanently, or 302 Found redirect.
-            permanentRedirect = true
-        }
+//    install(HttpsRedirect) {
+//            // The port to redirect to. By default 443, the default HTTPS port.
+//            sslPort = 443
+//            // 301 Moved Permanently, or 302 Found redirect.
+//            permanentRedirect = true
+//        }
     install(DefaultHeaders) {
         header("X-Engine", "Ktor") // will send this header with each response
     }
@@ -26,7 +26,9 @@ fun Application.configureHTTP() {
         allowMethod(HttpMethod.Patch)
         allowHeader(HttpHeaders.Authorization)
         allowHeader("MyCustomHeader")
-        anyHost() // @TODO: Don't do this in production if possible. Try to limit it.
+//        anyHost() // @TODO: Don't do this in production if possible. Try to limit it.
+        allowSameOrigin = true
+        allowCredentials = true
     }
     install(Compression) {
         gzip {
@@ -38,7 +40,7 @@ fun Application.configureHTTP() {
         }
     }
     install(CachingHeaders) {
-        options { call, outgoingContent ->
+        options { _, outgoingContent ->
             when (outgoingContent.contentType?.withoutParameters()) {
                 ContentType.Text.CSS -> CachingOptions(CacheControl.MaxAge(maxAgeSeconds = 24 * 60 * 60))
                 else -> null
