@@ -95,6 +95,13 @@ ant.withGroovyBuilder {
     )
 }
 
+fun sudoIfNeeded(): String {
+    if (serverUser.trim() == "root") {
+        return ""
+    }
+    return "sudo "
+}
+
 fun sshCommand(command: String, knownHosts: File) = ant.withGroovyBuilder {
     "ssh"(
         "host" to serverHost,
@@ -142,7 +149,7 @@ task("deploy") {
                 )
                 println("Upload done, attempt to stop the current ktor server...")
                 sshCommand(
-                    "sudo systemctl stop $serviceName",
+                    "${sudoIfNeeded()}systemctl stop $serviceName",
                     knownHosts
                 )
                 println("Server stopped, attempt to delete the current ktor server jar...")
@@ -169,7 +176,7 @@ task("deploy") {
                 )
                 println("Now let's start the ktor server service!")
                 sshCommand(
-                    "sudo systemctl start $serviceName",
+                    "${sudoIfNeeded()}systemctl start $serviceName",
                     knownHosts
                 )
                 println("Done!")
@@ -189,12 +196,12 @@ task("upgrade") {
             try {
                 println("Update repositories...")
                 sshCommand(
-                    "sudo apt update",
+                    "${sudoIfNeeded()}apt update",
                     knownHosts
                 )
                 println("Update packages...")
                 sshCommand(
-                    "sudo apt upgrade -y",
+                    "${sudoIfNeeded()}apt upgrade -y",
                     knownHosts
                 )
                 println("Done")
@@ -206,3 +213,11 @@ task("upgrade") {
         }
     }
 }
+
+abstract class ProjectNameTask : DefaultTask() {
+
+    @TaskAction
+    fun greet() = println("The project name is ${project.name}")
+}
+
+tasks.register<ProjectNameTask>("projectName")
