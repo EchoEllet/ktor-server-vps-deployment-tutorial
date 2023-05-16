@@ -68,7 +68,7 @@ val buildingJarFileName = "temp-server.jar"
 val startingJarFileName = "server.jar"
 
 val serverUser = "root"
-val serverHost = "193.23.160.48"
+val serverHost = "YOUR_IP_ADDRESS"
 val serverSshKey = file("keys/id_rsa")
 val deleteLog = true
 val lockFileName = ".serverLock"

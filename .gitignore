@@ -37,3 +37,4 @@ out/
 
 .env
 keys/
+.DS_Store
